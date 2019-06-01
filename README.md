@@ -1,6 +1,6 @@
 # Install SDK Global Tool
 
-Global tool to make installing .NET version that little bit easier
+Global tool to make installing .NET Core versions that little bit easier
 
 The dream:
 
