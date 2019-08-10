@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net.Http;
 using Shouldly;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace InstallSdkGlobalTool.Tests
 
                 var tool = new GlobalJsonLocator(new ConsoleTextWriter());
                 tool.Parse();
-                
+
                 sw.ToString().ShouldContain("global.json could not be found in the current directory");
             }
         }
@@ -28,10 +29,13 @@ namespace InstallSdkGlobalTool.Tests
             {
                 Console.SetOut(sw);
 
-                var tool = new GlobalJsonLocator(new ConsoleTextWriter());
+                var textWriter = new ConsoleTextWriter();
+                var tool = new GlobalJsonLocator(textWriter);
                 var globalJson = tool.Parse();
+                
+                new SdkAcquirer(new HttpClient(), textWriter).Acquire(globalJson?.Sdk?.Version).Wait();
 
-                globalJson.Sdk.Version.ShouldBe("2.2.100");                
+                (globalJson?.Sdk?.Version ?? throw new ArgumentNullException()).ShouldBe("2.2.100");
             }
         }
     }

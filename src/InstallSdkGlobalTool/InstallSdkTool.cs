@@ -1,3 +1,5 @@
+using System.Net.Http;
+
 namespace InstallSdkGlobalTool
 {
     public static class InstallSdkTool
@@ -7,9 +9,9 @@ namespace InstallSdkGlobalTool
             var writer = new ConsoleTextWriter();
             var locator = new GlobalJsonLocator(writer);
 
-            var contents = locator.Parse();
-            if (string.IsNullOrWhiteSpace(contents?.Sdk?.Version))
-                writer.WriteLine("Contents of global.json are invalid");
+            var version = locator.Parse().Sdk.Version;
+            var sdkAcquirer = new SdkAcquirer(new HttpClient(), writer);
+            sdkAcquirer.Acquire(version).GetAwaiter().GetResult();
         }
     }
 }
