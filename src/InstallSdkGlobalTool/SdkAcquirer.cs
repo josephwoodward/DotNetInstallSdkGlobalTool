@@ -16,11 +16,13 @@ namespace InstallSdkGlobalTool
     {
         readonly HttpClient _httpClient;
         readonly ITextWriter _textWriter;
+        readonly IInstallerLauncher _installerLauncher;
 
-        public SdkAcquirer(HttpClient httpClient, ITextWriter textWriter)
+        public SdkAcquirer(HttpClient httpClient, ITextWriter textWriter, IInstallerLauncher installerLauncher)
         {
             _httpClient = httpClient;
             _textWriter = textWriter;
+            _installerLauncher = installerLauncher;
         }
 
         public async Task Acquire(string version)
@@ -81,13 +83,7 @@ namespace InstallSdkGlobalTool
 
             CheckHash(filePath, fileHash);
 
-            var processStartInfo = new ProcessStartInfo
-            {
-                FileName = filePath,
-                UseShellExecute = true
-            };
-
-            Process.Start(processStartInfo);
+            _installerLauncher.Launch(filePath);
         }
 
         static string ParseChannelVersion(string version)

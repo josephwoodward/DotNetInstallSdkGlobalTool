@@ -30,10 +30,11 @@ namespace InstallSdkGlobalTool.Tests
                 Console.SetOut(sw);
 
                 var textWriter = new ConsoleTextWriter();
+                var installerLauncher = new TestInstallerLauncher();
                 var tool = new GlobalJsonLocator(textWriter);
                 var globalJson = tool.Parse();
                 
-                new SdkAcquirer(new HttpClient(), textWriter).Acquire(globalJson?.Sdk?.Version).Wait();
+                new SdkAcquirer(new HttpClient(), textWriter, installerLauncher).Acquire(globalJson?.Sdk?.Version).Wait();
 
                 (globalJson?.Sdk?.Version ?? throw new ArgumentNullException()).ShouldBe("2.2.100");
             }
