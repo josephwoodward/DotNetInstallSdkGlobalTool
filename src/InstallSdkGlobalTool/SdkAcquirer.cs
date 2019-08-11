@@ -131,13 +131,13 @@ namespace InstallSdkGlobalTool
             }
         }
 
-        static void CheckHash(string filePath, string fileHash)
+        void CheckHash(string filePath, string fileHash)
         {
             using var sha512 = new SHA512Managed();
             var hash = sha512.ComputeHash(File.OpenRead(filePath));
             var hashString = BitConverter.ToString(hash).Replace("-", "");
             if (hashString != fileHash)
-                Console.WriteLine("The downloaded file contents did not match expected hash.");
+                _textWriter.WriteLine("The downloaded file contents did not match expected hash.");
         }
     }
 }
