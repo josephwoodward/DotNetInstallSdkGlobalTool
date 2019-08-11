@@ -16,9 +16,9 @@ namespace InstallSdkGlobalTool
         public GlobalJsonFile Parse()
         {
             const string path = "global.json";
-            
+
             if (!File.Exists(path))
-                _textWriter.WriteLine("global.json could not be found in the current directory");
+                throw new FileNotFoundException("A global.json could not be found in the current directory...");
             
             var contents = File.ReadAllText(path);
             return JsonSerializer.Deserialize<GlobalJsonFile>(contents);
