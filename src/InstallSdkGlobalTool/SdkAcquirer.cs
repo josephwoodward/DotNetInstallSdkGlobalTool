@@ -14,24 +14,27 @@ namespace InstallSdkGlobalTool
 {
     public class SdkAcquirer
     {
+        const string ReleaseIndex = "https://raw.githubusercontent.com/dotnet/core/master/release-notes/releases-index.json";
+        
         readonly HttpClient _httpClient;
         readonly ITextWriter _textWriter;
         readonly IInstallerLauncher _installerLauncher;
+        readonly IPlatformIdentifier _platformIdentifier;
 
-        public SdkAcquirer(HttpClient httpClient, ITextWriter textWriter, IInstallerLauncher installerLauncher)
+        public SdkAcquirer(HttpClient httpClient, ITextWriter textWriter, IInstallerLauncher installerLauncher, IPlatformIdentifier platformIdentifier)
         {
             _httpClient = httpClient;
             _textWriter = textWriter;
             _installerLauncher = installerLauncher;
+            _platformIdentifier = platformIdentifier;
         }
 
         public async Task Acquire(string version)
         {
             var channelVersion = ParseChannelVersion(version);
-            var platform = GetPlatform();
+            var platform = _platformIdentifier.GetPlatform();
 
-            using var releasesResponse = await JsonDocument.ParseAsync(await _httpClient.GetStreamAsync(
-                "https://raw.githubusercontent.com/dotnet/core/master/release-notes/releases-index.json"));
+            using var releasesResponse = await JsonDocument.ParseAsync(await _httpClient.GetStreamAsync(ReleaseIndex));
 
             var channel = releasesResponse.RootElement.GetProperty("releases-index").EnumerateArray()
                 .First(x => x.GetProperty("channel-version").GetString() == channelVersion);
@@ -94,18 +97,6 @@ namespace InstallSdkGlobalTool
             return channelVersion;
         }
         
-        static string GetPlatform()
-        {
-            var architecture = Environment.Is64BitOperatingSystem ? "x64" : "x32";
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return $"linux-{architecture}";
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                return $"osx-{architecture}";
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                return $"win-{architecture}";
-            throw new PlatformNotSupportedException();
-        }
-
         static async Task CopyToWithProgress(Stream source, Stream destination, IProgress<long> progress)
         {
             var buffer = ArrayPool<byte>.Shared.Rent(81920);

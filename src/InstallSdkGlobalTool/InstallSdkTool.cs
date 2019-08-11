@@ -22,7 +22,7 @@ namespace InstallSdkGlobalTool
                 return;
             }
             
-            var sdkAcquirer = new SdkAcquirer(new HttpClient(), writer, new InstallerLauncher());
+            var sdkAcquirer = new SdkAcquirer(new HttpClient(), writer, new InstallerLauncher(), new PlatformIdentifier());
             sdkAcquirer.Acquire(version).GetAwaiter().GetResult();
         }
     }

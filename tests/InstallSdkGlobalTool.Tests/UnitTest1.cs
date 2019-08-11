@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Text;
+using JustEat.HttpClientInterception;
 using Shouldly;
 using Xunit;
 
@@ -11,33 +13,72 @@ namespace InstallSdkGlobalTool.Tests
         [Fact]
         public void NotifyUserGlobalJsonNotFound()
         {
-            using (var sw = new StringWriter())
-            {
-                Console.SetOut(sw);
+            using var sw = new StringWriter();
+            Console.SetOut(sw);
 
-                var tool = new GlobalJsonLocator(new ConsoleTextWriter());
-                tool.Parse();
+            var tool = new GlobalJsonLocator(new ConsoleTextWriter());
+            tool.Parse();
 
-                sw.ToString().ShouldContain("global.json could not be found in the current directory");
-            }
+            sw.ToString().ShouldContain("global.json could not be found in the current directory");
+        }
+
+        [Fact]
+        public void ParseGlobalJson()
+        {
+            var textWriter = new ConsoleTextWriter();
+            var tool = new GlobalJsonLocator(textWriter);
+            var globalJson = tool.Parse();
+            (globalJson?.Sdk?.Version ?? throw new ArgumentNullException()).ShouldBe("2.2.100");
         }
         
         [Fact]
-        public void ParsesGlobalJson()
+        public void AcquireSdk()
         {
-            using (var sw = new StringWriter())
-            {
-                Console.SetOut(sw);
+            using var sw = new StringWriter();
+            Console.SetOut(sw);
 
-                var textWriter = new ConsoleTextWriter();
-                var installerLauncher = new TestInstallerLauncher();
-                var tool = new GlobalJsonLocator(textWriter);
-                var globalJson = tool.Parse();
-                
-                new SdkAcquirer(new HttpClient(), textWriter, installerLauncher).Acquire(globalJson?.Sdk?.Version).Wait();
+            var textWriter = new ConsoleTextWriter();
+            var installerLauncher = new TestInstallerLauncher();
+            var platformIdentifier = new TestPlatformIdentifier();
+            
+            var options = new HttpClientInterceptorOptions();
 
-                (globalJson?.Sdk?.Version ?? throw new ArgumentNullException()).ShouldBe("2.2.100");
-            }
+            _ = new HttpRequestInterceptionBuilder()
+                .Requests()
+                .ForHttps()
+                .ForGet()
+                .ForHost("raw.githubusercontent.com")
+                .ForPath("/dotnet/core/master/release-notes/releases-index.json")
+                .Responds()
+                .WithContentStream(() => File.OpenRead("./TestReleaseData/releases-index.json"))
+                .RegisterWith(options);
+
+            _ = new HttpRequestInterceptionBuilder()
+                .Requests()
+                .ForHttps()
+                .ForGet()
+                .ForHost("dotnetcli.blob.core.windows.net")
+                .ForPath("/dotnet/release-metadata/2.2/releases.json")
+                .Responds()
+                .WithContentStream(() => File.OpenRead("./TestReleaseData/2.2-releases.json"))
+                .RegisterWith(options);
+            
+            _ = new HttpRequestInterceptionBuilder()
+                .Requests()
+                .ForHttps()
+                .ForGet()
+                .ForHost("download.visualstudio.microsoft.com")
+                .ForPath("/download/pr/29457b8f-6262-4c4b-8a54-eef308346842/3c7ec575796a2ef0e826a07ca4d13084/dotnet-sdk-2.2.100-osx-x64.pkg")
+                .Responds()
+                .WithContentStream(() => new MemoryStream(Encoding.UTF8.GetBytes("install me")))
+                .RegisterWith(options);
+            
+            using var httpClient = options.ThrowsOnMissingRegistration().CreateHttpClient();
+
+            new SdkAcquirer(httpClient, textWriter, installerLauncher, platformIdentifier)
+                .Acquire("2.2.100").Wait();
+
+            installerLauncher.LastLaunchedInstaller.ShouldNotBeNull();
         }
     }
 }
