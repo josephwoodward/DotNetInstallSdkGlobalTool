@@ -19,7 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="global.json">
+        <None Include="_global.json">
+            <Link>global.json</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
 

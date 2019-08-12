@@ -76,11 +76,11 @@ namespace InstallSdkGlobalTool
             var lastReportedBytesMbs = 0;
             progress.ProgressChanged += (sender, totalBytes) =>
             {
-                var currentByesMbs = (int) Math.Floor(totalBytes / Math.Pow(2, 20));
-                if (currentByesMbs <= lastReportedBytesMbs) return;
-                lastReportedBytesMbs = currentByesMbs;
+                var currentBytesMbs = (int) Math.Floor(totalBytes / Math.Pow(2, 20));
+                if (currentBytesMbs <= lastReportedBytesMbs) return;
+                lastReportedBytesMbs = currentBytesMbs;
                 _textWriter.SetCursorPosition(0, Console.CursorTop);
-                _textWriter.Write($"Downloading: {currentByesMbs}MB");
+                _textWriter.Write($"Downloading: {currentBytesMbs}MB");
             };
             await CopyToWithProgress(installerStream, fileStream, progress);
 

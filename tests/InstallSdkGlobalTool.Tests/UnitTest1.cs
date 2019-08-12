@@ -10,7 +10,7 @@ namespace InstallSdkGlobalTool.Tests
 {
     public class UnitTest1
     {
-        [Fact]
+        [Fact(Skip="Manual test for now")]
         public void NotifyUserGlobalJsonNotFound()
         {
             using var sw = new StringWriter();
@@ -78,7 +78,9 @@ namespace InstallSdkGlobalTool.Tests
             new SdkAcquirer(httpClient, textWriter, installerLauncher, platformIdentifier)
                 .Acquire("2.2.100").Wait();
 
-            installerLauncher.LastLaunchedInstaller.ShouldNotBeNull();
+            var installerPath = installerLauncher.LastLaunchedInstaller;
+            installerPath.ShouldNotBeNullOrEmpty();
+            File.ReadAllLines(installerPath).ShouldHaveSingleItem().ShouldBe("install me");
         }
     }
 }
