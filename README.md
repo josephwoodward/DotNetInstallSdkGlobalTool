@@ -15,4 +15,4 @@ Usage:
 2. Type `installsdk`
 3. Sit back and relax as the Install SDK global tool installs the version of the SDK required.
 
-Big thanks to [@stuartblang](https://twitter.com/stuartblang) who also helped out on this.
+Big thanks to [@stuartblang](https://twitter.com/stuartblang) who contributed loads to this.
