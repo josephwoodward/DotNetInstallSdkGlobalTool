@@ -2,10 +2,15 @@
 
 Global tool to make installing .NET Core versions that little bit easier
 
-The dream:
+
+To install:
 
 ```bash
-dotnet installsdk
+$ dotnet tool install --global InstallSdkGlobalTool --version 1.0.0-alpha
 ```
 
-Then installs SDK version (if not installed already) based on the `global.json` in the directory.
+Usage:
+
+1. Navigate to a directory that contains a `global.json` file.
+2. Type `installsdk`
+3. Sit back and relax as the Install SDK global tool installs the version of the SDK required.
