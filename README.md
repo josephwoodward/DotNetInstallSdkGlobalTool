@@ -14,3 +14,5 @@ Usage:
 1. Navigate to a directory that contains a `global.json` file.
 2. Type `installsdk`
 3. Sit back and relax as the Install SDK global tool installs the version of the SDK required.
+
+Big thanks to [@stuartblang](https://twitter.com/stuartblang) who also helped out on this.
