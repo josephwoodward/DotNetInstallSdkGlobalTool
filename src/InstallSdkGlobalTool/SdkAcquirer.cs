@@ -121,7 +121,8 @@ namespace InstallSdkGlobalTool
         void CheckHash(string filePath, string fileHash)
         {
             using var sha512 = new SHA512Managed();
-            var hash = sha512.ComputeHash(File.OpenRead(filePath));
+            Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var hash = sha512.ComputeHash(stream);
             var hashString = BitConverter.ToString(hash).Replace("-", "");
             if (hashString != fileHash)
                 _textWriter.WriteLine("The downloaded file contents did not match expected hash.");
