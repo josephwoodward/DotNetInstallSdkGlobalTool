@@ -10,7 +10,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.Text.Json" Version="4.6.0-preview7.19362.9" />
+        <PackageReference Include="System.Text.Json" Version="4.6.0-preview7.19362.9" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <None Update="global.json" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

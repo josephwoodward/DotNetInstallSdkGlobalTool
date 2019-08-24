@@ -17,7 +17,7 @@ namespace InstallSdkGlobalTool
                 UseShellExecute = true
             };
 
-            Process.Start(processStartInfo);
+            Process.Start(processStartInfo)?.WaitForExit();
         }
     }
 }
