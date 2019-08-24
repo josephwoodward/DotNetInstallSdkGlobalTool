@@ -6,7 +6,7 @@ Global tool to make installing .NET Core versions that little bit easier
 To install:
 
 ```bash
-$ dotnet tool install --global InstallSdkGlobalTool --version 1.0.0-alpha
+$ dotnet tool install --global InstallSdkGlobalTool --version 1.0.0-beta
 ```
 
 Usage:
