@@ -69,23 +69,25 @@ namespace InstallSdkGlobalTool
             var fileHash = file.GetProperty("hash").GetString();
             
             var filePath = Path.Combine(Path.GetTempPath(), name);
-            using var installerStream = await _httpClient.GetStreamAsync(installerUrl);
-            using var fileStream = new FileStream(filePath, FileMode.Create);
-            var progress = new Progress<long>();
-
-            var lastReportedBytesMbs = 0;
-            progress.ProgressChanged += (sender, totalBytes) =>
+            using (var installerStream = await _httpClient.GetStreamAsync(installerUrl))
             {
-                var currentBytesMbs = (int) Math.Floor(totalBytes / Math.Pow(2, 20));
-                if (currentBytesMbs <= lastReportedBytesMbs) return;
-                lastReportedBytesMbs = currentBytesMbs;
-                _textWriter.SetCursorPosition(0, Console.CursorTop);
-                _textWriter.Write($"Downloading: {currentBytesMbs}MB");
-            };
-            await CopyToWithProgress(installerStream, fileStream, progress);
+                using var fileStream = new FileStream(filePath, FileMode.Create);
+                var progress = new Progress<long>();
+
+                var lastReportedBytesMbs = 0;
+                progress.ProgressChanged += (sender, totalBytes) =>
+                {
+                    var currentBytesMbs = (int) Math.Floor(totalBytes / Math.Pow(2, 20));
+                    if (currentBytesMbs <= lastReportedBytesMbs) return;
+                    lastReportedBytesMbs = currentBytesMbs;
+                    _textWriter.SetCursorPosition(0, Console.CursorTop);
+                    _textWriter.Write($"Downloading: {currentBytesMbs}MB");
+                };
+                
+                await CopyToWithProgress(installerStream, fileStream, progress);
+            }
 
             CheckHash(filePath, fileHash);
-
             _installerLauncher.Launch(filePath);
         }
 
@@ -121,7 +123,8 @@ namespace InstallSdkGlobalTool
         void CheckHash(string filePath, string fileHash)
         {
             using var sha512 = new SHA512Managed();
-            var hash = sha512.ComputeHash(File.OpenRead(filePath));
+            using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var hash = sha512.ComputeHash(stream);
             var hashString = BitConverter.ToString(hash).Replace("-", "");
             if (hashString != fileHash)
                 _textWriter.WriteLine("The downloaded file contents did not match expected hash.");

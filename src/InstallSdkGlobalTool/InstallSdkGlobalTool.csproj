@@ -6,11 +6,15 @@
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>installsdk</ToolCommandName>
         <LangVersion>8</LangVersion>
-        <PackageVersion>1.0.0-alpha</PackageVersion>
+        <PackageVersion>1.0.0-beta</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.Text.Json" Version="4.6.0-preview7.19362.9" />
+        <PackageReference Include="System.Text.Json" Version="4.6.0-preview7.19362.9" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <None Update="global.json" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>
