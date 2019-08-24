@@ -6,7 +6,7 @@
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>installsdk</ToolCommandName>
         <LangVersion>8</LangVersion>
-        <PackageVersion>1.0.0-alpha</PackageVersion>
+        <PackageVersion>1.0.0-beta</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
