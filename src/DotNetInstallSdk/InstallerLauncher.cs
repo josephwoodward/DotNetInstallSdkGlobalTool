@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace InstallSdkGlobalTool
+namespace DotNet.InstallSdk
 {
     public interface IInstallerLauncher
     {

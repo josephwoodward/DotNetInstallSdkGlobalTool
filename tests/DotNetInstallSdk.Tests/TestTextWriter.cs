@@ -1,6 +1,6 @@
 using System;
 
-namespace InstallSdkGlobalTool.Tests
+namespace DotNet.InstallSdk.Tests
 {
     public class TestTextWriter : ITextWriter
     {

@@ -4,6 +4,7 @@
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <IsPackable>false</IsPackable>
         <LangVersion>8</LangVersion>
+        <RootNamespace>DotNet.InstallSdk.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,10 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\InstallSdkGlobalTool\InstallSdkGlobalTool.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Include="_global.json">
             <Link>global.json</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -27,6 +24,10 @@
         <Content Include="TestReleaseData/**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\DotNetInstallSdk\DotNetInstallSdk.csproj" />
     </ItemGroup>
     
 </Project>
