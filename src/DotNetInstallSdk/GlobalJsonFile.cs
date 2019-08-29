@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace InstallSdkGlobalTool
+namespace DotNet.InstallSdk
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class GlobalJsonFile

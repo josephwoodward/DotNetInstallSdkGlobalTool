@@ -1,4 +1,4 @@
-namespace InstallSdkGlobalTool.Tests
+namespace DotNet.InstallSdk.Tests
 {
     public class TestPlatformIdentifier : IPlatformIdentifier
     {

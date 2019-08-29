@@ -1,4 +1,4 @@
-﻿namespace InstallSdkGlobalTool
+﻿namespace DotNet.InstallSdk
 {
     class Program
     {

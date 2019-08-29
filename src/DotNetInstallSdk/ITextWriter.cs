@@ -1,6 +1,6 @@
 using System;
 
-namespace InstallSdkGlobalTool
+namespace DotNet.InstallSdk
 {
     public interface ITextWriter
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace InstallSdkGlobalTool
+namespace DotNet.InstallSdk
 {
     public interface IPlatformIdentifier
     {

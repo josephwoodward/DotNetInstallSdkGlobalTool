@@ -1,12 +1,11 @@
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Text;
 using JustEat.HttpClientInterception;
 using Shouldly;
 using Xunit;
 
-namespace InstallSdkGlobalTool.Tests
+namespace DotNet.InstallSdk.Tests
 {
     public class UnitTest1
     {

@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstallSdkGlobalTool", "src\InstallSdkGlobalTool\InstallSdkGlobalTool.csproj", "{599B9F92-614C-4A51-A4DC-974489F55E2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetInstallSdk", "src\DotNetInstallSdk\DotNetInstallSdk.csproj", "{599B9F92-614C-4A51-A4DC-974489F55E2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstallSdkGlobalTool.Tests", "tests\InstallSdkGlobalTool.Tests\InstallSdkGlobalTool.Tests.csproj", "{A4DEFDD5-EA0A-465D-824D-E5F18783B57E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetInstallSdk.Tests", "tests\DotNetInstallSdk.Tests\DotNetInstallSdk.Tests.csproj", "{A4DEFDD5-EA0A-465D-824D-E5F18783B57E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

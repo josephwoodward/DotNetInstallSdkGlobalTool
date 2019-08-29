@@ -1,19 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <title>Install SDK Global Tool</title>
+        <Title>DotNet Install SDK Global Tool</Title>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <PackAsTool>true</PackAsTool>
-        <ToolCommandName>installsdk</ToolCommandName>
+        <ToolCommandName>dotnet-install-sdk</ToolCommandName>
         <LangVersion>8</LangVersion>
-        <VersionPrefix>1.0.0</VersionPrefix>
+        <VersionPrefix>2.0.0</VersionPrefix>
         <Authors>Joseph Woodward, Stuart Lang</Authors>
         <Description>A .NET Core Global Tool for installing .NET Core SDK versions based on global.json files</Description>
         <PackageProjectUrl>https://github.com/JosephWoodward/InstallSdkGlobalTool</PackageProjectUrl>
         <RepositoryUrl>https://github.com/JosephWoodward/InstallSdkGlobalTool.git</RepositoryUrl> 
         <RepositoryType>git</RepositoryType> 
-        <PackageLicenseUrl>https://github.com/JosephWoodward/InstallSdkGlobalTool/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageLicenseUrl>https://github.com/JosephWoodward/InstallSdkGlobalTool/blob/master/LICENSE</PackageLicenseUrl> 
+        <RootNamespace>DotNet.InstallSdk</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <None Update="global.json" CopyToOutputDirectory="PreserveNewest" />
+        <None Update="global.local.json" Link="global.json" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>
