@@ -1,22 +1,22 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DotNet.InstallSdk.Acquirables;
 
 namespace DotNet.InstallSdk
 {
     public static class InstallSdkTool
     {
-        public static void Run()
+        public static void Run(CommandLineArguments args)
         {
             var writer = new ConsoleTextWriter();
-            var locator = new GlobalJsonLocator(writer);
 
             try
             {
-                var version = locator.Parse().Sdk.Version;
-
+                var v = new GlobalJsonVersion(writer);
+                
                 var sdkAcquirer = new SdkAcquirer(new HttpClient(), writer, new InstallerLauncher(), new PlatformIdentifier());
-                sdkAcquirer.Acquire(version).GetAwaiter().GetResult();
+                sdkAcquirer.Acquire(v).GetAwaiter().GetResult();
             }
             catch (FileNotFoundException e)
             {

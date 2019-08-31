@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using DotNet.InstallSdk.Acquirables;
 using JustEat.HttpClientInterception;
 using Shouldly;
 using Xunit;
@@ -74,8 +75,10 @@ namespace DotNet.InstallSdk.Tests
             
             using var httpClient = options.ThrowsOnMissingRegistration().CreateHttpClient();
 
+            var a = new GlobalJsonVersion(textWriter);
+            
             new SdkAcquirer(httpClient, textWriter, installerLauncher, platformIdentifier)
-                .Acquire("2.2.100").Wait();
+                .Acquire(a).Wait();
 
             var installerPath = installerLauncher.LastLaunchedInstaller;
             installerPath.ShouldNotBeNullOrEmpty();
