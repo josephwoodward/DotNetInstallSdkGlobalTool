@@ -8,18 +8,19 @@
         <PackageTags>global tool;install sdk</PackageTags>
         <ToolCommandName>dotnet-install-sdk</ToolCommandName>
         <LangVersion>8</LangVersion>
-        <VersionPrefix>2.0.0</VersionPrefix>
+        <VersionPrefix>2.0.1</VersionPrefix>
         <PackageId>InstallSdkGlobalTool</PackageId>
         <Authors>Joseph Woodward, Stuart Lang</Authors>
         <Description>A .NET Core Global Tool for installing .NET Core SDK versions based on global.json files</Description>
         <PackageProjectUrl>https://github.com/JosephWoodward/DotNetInstallSdkGlobalTool/</PackageProjectUrl>
-        <RepositoryUrl>>https://github.com/JosephWoodward/DotNetInstallSdkGlobalTool.git</RepositoryUrl> 
+        <RepositoryUrl>https://github.com/JosephWoodward/DotNetInstallSdkGlobalTool.git</RepositoryUrl> 
         <RepositoryType>git</RepositoryType> 
         <PackageLicenseUrl>https://github.com/JosephWoodward/DotNetInstallSdkGlobalTool/blob/master/LICENSE</PackageLicenseUrl> 
         <RootNamespace>DotNet.InstallSdk</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.4" />
         <PackageReference Include="System.Text.Json" Version="4.6.0-preview7.19362.9" />
     </ItemGroup>
 

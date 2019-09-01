@@ -7,13 +7,12 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
+using DotNet.InstallSdk.Acquirables;
 
 namespace DotNet.InstallSdk
 {
     public class SdkAcquirer
     {
-        const string ReleaseIndex = "https://raw.githubusercontent.com/dotnet/core/master/release-notes/releases-index.json";
-        
         readonly HttpClient _httpClient;
         readonly ITextWriter _textWriter;
         readonly IInstallerLauncher _installerLauncher;
@@ -27,19 +26,10 @@ namespace DotNet.InstallSdk
             _platformIdentifier = platformIdentifier;
         }
 
-        public async Task Acquire(string version)
+        public async Task Acquire(Acquirable acquirable)
         {
-            var channelVersion = ParseChannelVersion(version);
-            var platform = _platformIdentifier.GetPlatform();
-
-            using var releasesResponse = await JsonDocument.ParseAsync(await _httpClient.GetStreamAsync(ReleaseIndex));
-
-            var channel = releasesResponse.RootElement.GetProperty("releases-index").EnumerateArray()
-                .First(x => x.GetProperty("channel-version").GetString() == channelVersion);
-
-            var channelJson = channel.GetProperty("releases.json").GetString();
-
-            using var channelResponse = await JsonDocument.ParseAsync(await _httpClient.GetStreamAsync(channelJson));
+            var result = await acquirable.Fetch(_httpClient);
+            using var channelResponse = await JsonDocument.ParseAsync(await _httpClient.GetStreamAsync(result.ChannelJson));
 
             var file = channelResponse
                 .RootElement.GetProperty("releases").EnumerateArray()
@@ -57,16 +47,17 @@ namespace DotNet.InstallSdk
 
                     return GetSdks();
                 })
-                .First(x => x.GetProperty("version").GetString() == version)
+                .First(x => x.GetProperty("version").GetString() == result.Version)
                 .GetProperty("files")
                 .EnumerateArray()
-                .First(x => x.GetProperty("rid").GetString() == platform);
+                .First(x => x.GetProperty("rid").GetString() == _platformIdentifier.GetPlatform());
 
             var name = file.GetProperty("name").GetString();
             var installerUrl = file.GetProperty("url").GetString();
             var fileHash = file.GetProperty("hash").GetString();
             
             var filePath = Path.Combine(Path.GetTempPath(), name);
+            _textWriter.WriteLine($"Starting download of .NET Core SDK Version {result.Version}");
             using (var installerStream = await _httpClient.GetStreamAsync(installerUrl))
             {
                 using var fileStream = new FileStream(filePath, FileMode.Create);
@@ -89,14 +80,6 @@ namespace DotNet.InstallSdk
             _installerLauncher.Launch(filePath);
         }
 
-        static string ParseChannelVersion(string version)
-        {
-            var channelVersion = version.Substring(0, 3);
-            if (!char.IsDigit(channelVersion[0]) || channelVersion[1] != '.' || !char.IsDigit(channelVersion[2]))
-                throw new ArgumentException(@"Parsing channel version failed, expected a major.minor format. e.g. ""2.1""", nameof(version));
-            return channelVersion;
-        }
-        
         static async Task CopyToWithProgress(Stream source, Stream destination, IProgress<long> progress)
         {
             var buffer = ArrayPool<byte>.Shared.Rent(81920);
