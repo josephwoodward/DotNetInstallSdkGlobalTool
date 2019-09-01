@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -7,16 +8,12 @@ namespace DotNet.InstallSdk
 {
     public static class InstallSdkTool
     {
-        public static void Run(CommandLineArguments args)
+        public static void Run(Acquirable acquirable, ConsoleTextWriter writer)
         {
-            var writer = new ConsoleTextWriter();
-
             try
             {
-                var v = new GlobalJsonVersion(writer);
-                
                 var sdkAcquirer = new SdkAcquirer(new HttpClient(), writer, new InstallerLauncher(), new PlatformIdentifier());
-                sdkAcquirer.Acquire(v).GetAwaiter().GetResult();
+                sdkAcquirer.Acquire(acquirable).GetAwaiter().GetResult();
             }
             catch (FileNotFoundException e)
             {
