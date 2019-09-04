@@ -8,7 +8,7 @@
         <PackageTags>global tool;install sdk</PackageTags>
         <ToolCommandName>dotnet-install-sdk</ToolCommandName>
         <LangVersion>8</LangVersion>
-        <VersionPrefix>2.1.0</VersionPrefix>
+        <VersionPrefix>2.1.1</VersionPrefix>
         <PackageId>InstallSdkGlobalTool</PackageId>
         <Authors>Joseph Woodward, Stuart Lang</Authors>
         <Description>A .NET Core Global Tool for installing .NET Core SDK versions base on lots of different requirements</Description>

@@ -25,7 +25,7 @@ namespace DotNet.InstallSdk.Acquirables.GlobalJson
 
         public override async Task<AcquireResult> Fetch(HttpClient httpClient)
         { 
-            var parse = new GlobalJsonLocator(_writer).Parse();
+            var parse = new GlobalJsonFileLocator(_writer).Parse();
             if (!parse.IsSuccess)
             {
                 _writer.WriteLine(parse.ErrorMessage);
