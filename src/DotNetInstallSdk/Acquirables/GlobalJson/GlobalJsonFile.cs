@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace DotNet.InstallSdk
+namespace DotNet.InstallSdk.Acquirables.GlobalJson
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class GlobalJsonFile
@@ -9,6 +9,7 @@ namespace DotNet.InstallSdk
         public Sdk Sdk { get; set; }
     }
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class Sdk
     {
         [JsonPropertyName("version")]

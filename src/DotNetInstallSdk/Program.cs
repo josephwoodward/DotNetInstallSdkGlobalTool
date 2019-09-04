@@ -1,4 +1,5 @@
 ﻿using DotNet.InstallSdk.Acquirables;
+using DotNet.InstallSdk.Acquirables.GlobalJson;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace DotNet.InstallSdk

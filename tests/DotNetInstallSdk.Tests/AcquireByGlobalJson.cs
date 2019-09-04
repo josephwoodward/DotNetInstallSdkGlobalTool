@@ -1,34 +1,36 @@
 using System;
 using System.IO;
 using System.Text;
-using DotNet.InstallSdk.Acquirables;
+using DotNet.InstallSdk.Acquirables.GlobalJson;
 using JustEat.HttpClientInterception;
 using Shouldly;
 using Xunit;
 
 namespace DotNet.InstallSdk.Tests
 {
-    public class UnitTest1
+    public class AcquireByGlobalJson
     {
-        [Fact(Skip="Manual test for now")]
+        [Fact]
         public void NotifyUserGlobalJsonNotFound()
         {
             using var sw = new StringWriter();
             Console.SetOut(sw);
 
-            var tool = new GlobalJsonLocator(new ConsoleTextWriter());
-            tool.Parse();
+            var tool = new GlobalJsonFileLocator(new ConsoleTextWriter());
+            var result = tool.Parse("_global.json");
 
-            sw.ToString().ShouldContain("global.json could not be found in the current directory");
+            result.IsSuccess.ShouldBe(false);
+            result.GlobalJsonFile.ShouldBe(null);
+            result.ErrorMessage.ShouldBe("A _global.json file could not be found in the current directory.");
         }
 
         [Fact]
         public void ParseGlobalJson()
         {
             var textWriter = new ConsoleTextWriter();
-            var tool = new GlobalJsonLocator(textWriter);
-            var globalJson = tool.Parse();
-            (globalJson?.Sdk?.Version ?? throw new ArgumentNullException()).ShouldBe("2.2.100");
+            var tool = new GlobalJsonFileLocator(textWriter);
+            var parseResult = tool.Parse();
+            (parseResult?.GlobalJsonFile.Sdk?.Version ?? throw new ArgumentNullException()).ShouldBe("2.2.100");
         }
         
         [Fact]

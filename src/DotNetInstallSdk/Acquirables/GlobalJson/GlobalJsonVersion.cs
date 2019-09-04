@@ -4,17 +4,16 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace DotNet.InstallSdk.Acquirables
+namespace DotNet.InstallSdk.Acquirables.GlobalJson
 {
     public class GlobalJsonVersion : Acquirable
     {
-        readonly string _version;
+        private readonly ITextWriter _writer;
 
         public GlobalJsonVersion(ITextWriter writer)
         {
-            _version = new GlobalJsonLocator(writer).Parse().Sdk.Version;
+            _writer = writer;
         }
-
         
         static string ParseChannelVersion(string version)
         {
@@ -25,8 +24,16 @@ namespace DotNet.InstallSdk.Acquirables
         }
 
         public override async Task<AcquireResult> Fetch(HttpClient httpClient)
-        {
-            var channelVersion = ParseChannelVersion(_version);
+        { 
+            var parse = new GlobalJsonFileLocator(_writer).Parse();
+            if (!parse.IsSuccess)
+            {
+                _writer.WriteLine(parse.ErrorMessage);
+                return new AcquireResult();
+            }
+
+            var version = parse.GlobalJsonFile.Sdk.Version;
+            var channelVersion = ParseChannelVersion(version);
 
             using var releasesResponse = await JsonDocument.ParseAsync(await httpClient.GetStreamAsync(ReleaseIndex));
 
@@ -38,7 +45,7 @@ namespace DotNet.InstallSdk.Acquirables
             return new AcquireResult
             {
                 ChannelJson = channelJson,
-                Version = _version
+                Version = version
             };
         }
     }
