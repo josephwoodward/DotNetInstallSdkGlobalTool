@@ -29,6 +29,9 @@ namespace DotNet.InstallSdk
         public async Task Acquire(Acquirable acquirable)
         {
             var result = await acquirable.Fetch(_httpClient);
+            if (!result.IsSuccess)
+                return;
+            
             using var channelResponse = await JsonDocument.ParseAsync(await _httpClient.GetStreamAsync(result.ChannelJson));
 
             var file = channelResponse

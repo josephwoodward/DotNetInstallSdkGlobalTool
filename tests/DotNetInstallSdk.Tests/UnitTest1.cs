@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using DotNet.InstallSdk.Acquirables;
+using DotNet.InstallSdk.Acquirables.GlobalJson;
 using JustEat.HttpClientInterception;
 using Shouldly;
 using Xunit;
@@ -27,8 +28,8 @@ namespace DotNet.InstallSdk.Tests
         {
             var textWriter = new ConsoleTextWriter();
             var tool = new GlobalJsonLocator(textWriter);
-            var globalJson = tool.Parse();
-            (globalJson?.Sdk?.Version ?? throw new ArgumentNullException()).ShouldBe("2.2.100");
+            var parseResult = tool.Parse();
+            (parseResult?.GlobalJsonFile.Sdk?.Version ?? throw new ArgumentNullException()).ShouldBe("2.2.100");
         }
         
         [Fact]
