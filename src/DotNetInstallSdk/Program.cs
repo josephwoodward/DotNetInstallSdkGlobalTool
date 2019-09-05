@@ -1,4 +1,5 @@
-﻿using DotNet.InstallSdk.Acquirables;
+using System.Threading.Tasks;
+using DotNet.InstallSdk.Acquirables;
 using DotNet.InstallSdk.Acquirables.GlobalJson;
 using McMaster.Extensions.CommandLineUtils;
 
@@ -16,7 +17,7 @@ namespace DotNet.InstallSdk
         [Option("-L|--latest", Description = "Install the latest non-preview version of the .NET Core SDK")]
         public bool Latest { get; } = false;
 */
-        private void OnExecute()
+        private async Task OnExecuteAsync()
         {
             var writer = new ConsoleTextWriter();
 
@@ -29,8 +30,8 @@ namespace DotNet.InstallSdk
             {
                 a = new GlobalJsonVersion(writer);
             }
-            
-            InstallSdkTool.Run(a, writer);
+
+            await InstallSdkTool.RunAsync(a, writer);
         }
     }
 }

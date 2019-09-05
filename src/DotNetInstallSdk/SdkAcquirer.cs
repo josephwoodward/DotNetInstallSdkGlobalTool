@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DotNet.InstallSdk.Acquirables;
+using static SimpleExec.Command;
 
 namespace DotNet.InstallSdk
 {
@@ -32,6 +33,12 @@ namespace DotNet.InstallSdk
             if (!result.IsSuccess)
                 return;
             
+            if (await CheckSdkExists(result.Version))
+            {
+                _textWriter.WriteLine($"SDK version {result.Version} is already installed.");
+                return;
+            }
+
             using var channelResponse = await JsonDocument.ParseAsync(await _httpClient.GetStreamAsync(result.ChannelJson));
 
             var file = channelResponse
@@ -112,6 +119,30 @@ namespace DotNet.InstallSdk
             var hashString = BitConverter.ToString(hash).Replace("-", "");
             if (hashString != fileHash)
                 _textWriter.WriteLine("The downloaded file contents did not match expected hash.");
+        }
+        
+        static async Task<bool> CheckSdkExists(string version)
+        {
+            try
+            {
+                var dotnetInfo =
+                    (await ReadAsync("dotnet", "--info", noEcho: true)).Split(new[] {'\r', '\n'},
+                        StringSplitOptions.RemoveEmptyEntries);
+
+                var existingSdks =
+                    dotnetInfo
+                        .SkipWhile(x => !x.Contains(".NET Core SDKs installed:"))
+                        .TakeWhile(x => !string.IsNullOrWhiteSpace(x))
+                        .Select(x => x.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                        .Where(x => x.Length > 0)
+                        .Select(x => x.First());
+
+                return existingSdks.Contains(version);
+            }
+            catch
+            {
+                return false; // If we fail to detect installed sdks, just assume we need to acquire it
+            }
         }
     }
 }
