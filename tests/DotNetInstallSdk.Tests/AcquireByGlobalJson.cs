@@ -18,11 +18,11 @@ namespace DotNet.InstallSdk.Tests
             Console.SetOut(sw);
 
             var tool = new GlobalJsonFileLocator(new ConsoleTextWriter());
-            var result = tool.Parse("_global.json");
+            var result = tool.Parse("not-found.json");
 
             result.IsSuccess.ShouldBe(false);
             result.GlobalJsonFile.ShouldBe(null);
-            result.ErrorMessage.ShouldBe("A _global.json file could not be found.");
+            result.ErrorMessage.ShouldBe("A not-found.json file could not be found.");
         }
 
         [Fact]
