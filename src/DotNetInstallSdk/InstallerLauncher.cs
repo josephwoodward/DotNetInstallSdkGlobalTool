@@ -23,6 +23,7 @@ namespace DotNet.InstallSdk
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 _writer.WriteLine($"The SDK has been downloaded to: {installerPath}");
+                return;
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -34,6 +35,7 @@ namespace DotNet.InstallSdk
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 Run(installerPath, $"/install /quiet /norestart");
+                return;
             }
             
             throw new PlatformNotSupportedException();
