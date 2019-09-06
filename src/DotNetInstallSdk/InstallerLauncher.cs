@@ -27,7 +27,7 @@ namespace DotNet.InstallSdk
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                Run("installer", $"-pkg {installerPath}");
+                Run("sudo", $"installer -pkg {installerPath} -target /");
                 return;
             }
 
