@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -61,8 +62,7 @@ namespace DotNet.InstallSdk
                 .First(x => x.GetProperty("version").GetString() == result.Version)
                 .GetProperty("files")
                 .EnumerateArray()
-                .First(x => x.GetProperty("rid").GetString() == _platformIdentifier.GetPlatform() &&
-                            FileIsInstaller(x.GetProperty("name").GetString()));
+                .First(FileFilter);
 
             var name = file.GetProperty("name").GetString();
             var installerUrl = file.GetProperty("url").GetString();
@@ -146,9 +146,21 @@ namespace DotNet.InstallSdk
             }
         }
 
-        static bool FileIsInstaller(string filename)
+        bool FileFilter(JsonElement file)
         {
-            return filename.EndsWith(".exe") || filename.EndsWith(".pkg");
+            string GetFilenameSuffix()
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    return $".gz";
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    return $".pkg";
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    return $".exe";
+                throw new PlatformNotSupportedException();
+            }
+
+            return file.GetProperty("rid").GetString() == _platformIdentifier.GetPlatform() &&
+                   file.GetProperty("name").ToString().EndsWith(GetFilenameSuffix());
         }
     }
 }
