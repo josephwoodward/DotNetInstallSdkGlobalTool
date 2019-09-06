@@ -8,7 +8,6 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DotNet.InstallSdk.Acquirables;
-using static SimpleExec.Command;
 
 namespace DotNet.InstallSdk
 {
@@ -18,13 +17,15 @@ namespace DotNet.InstallSdk
         readonly ITextWriter _textWriter;
         readonly IInstallerLauncher _installerLauncher;
         readonly IPlatformIdentifier _platformIdentifier;
+        readonly IDotnetInfo _dotnetInfo;
 
-        public SdkAcquirer(HttpClient httpClient, ITextWriter textWriter, IInstallerLauncher installerLauncher, IPlatformIdentifier platformIdentifier)
+        public SdkAcquirer(HttpClient httpClient, ITextWriter textWriter, IInstallerLauncher installerLauncher, IPlatformIdentifier platformIdentifier, IDotnetInfo dotnetInfo)
         {
             _httpClient = httpClient;
             _textWriter = textWriter;
             _installerLauncher = installerLauncher;
             _platformIdentifier = platformIdentifier;
+            _dotnetInfo = dotnetInfo;
         }
 
         public async Task Acquire(Acquirable acquirable)
@@ -60,7 +61,8 @@ namespace DotNet.InstallSdk
                 .First(x => x.GetProperty("version").GetString() == result.Version)
                 .GetProperty("files")
                 .EnumerateArray()
-                .First(x => x.GetProperty("rid").GetString() == _platformIdentifier.GetPlatform());
+                .First(x => x.GetProperty("rid").GetString() == _platformIdentifier.GetPlatform() &&
+                            FileIsInstaller(x.GetProperty("name").GetString()));
 
             var name = file.GetProperty("name").GetString();
             var installerUrl = file.GetProperty("url").GetString();
@@ -121,13 +123,12 @@ namespace DotNet.InstallSdk
                 _textWriter.WriteLine("The downloaded file contents did not match expected hash.");
         }
         
-        static async Task<bool> CheckSdkExists(string version)
+        async Task<bool> CheckSdkExists(string version)
         {
             try
             {
                 var dotnetInfo =
-                    (await ReadAsync("dotnet", "--info", noEcho: true)).Split(new[] {'\r', '\n'},
-                        StringSplitOptions.RemoveEmptyEntries);
+                    (await _dotnetInfo.GetInfo()).Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
 
                 var existingSdks =
                     dotnetInfo
@@ -143,6 +144,11 @@ namespace DotNet.InstallSdk
             {
                 return false; // If we fail to detect installed sdks, just assume we need to acquire it
             }
+        }
+
+        static bool FileIsInstaller(string filename)
+        {
+            return filename.EndsWith(".exe") || filename.EndsWith(".pkg");
         }
     }
 }

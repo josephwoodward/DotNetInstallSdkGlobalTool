@@ -11,7 +11,7 @@ namespace DotNet.InstallSdk
         {
             try
             {
-                var sdkAcquirer = new SdkAcquirer(new HttpClient(), writer, new InstallerLauncher(), new PlatformIdentifier());
+                var sdkAcquirer = new SdkAcquirer(new HttpClient(), writer, new InstallerLauncher(writer), new PlatformIdentifier(), new DotnetInfo());
                 await sdkAcquirer.Acquire(acquirable);
             }
             catch (FileNotFoundException e)

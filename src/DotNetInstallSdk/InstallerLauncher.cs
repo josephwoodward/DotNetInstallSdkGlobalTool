@@ -1,4 +1,6 @@
-using System.Diagnostics;
+using System;
+using System.Runtime.InteropServices;
+using static SimpleExec.Command;
 
 namespace DotNet.InstallSdk
 {
@@ -9,15 +11,32 @@ namespace DotNet.InstallSdk
 
     public class InstallerLauncher : IInstallerLauncher
     {
+        readonly ITextWriter _writer;
+
+        public InstallerLauncher(ITextWriter writer)
+        {
+            _writer = writer;
+        }
+        
         public void Launch(string installerPath)
         {
-            var processStartInfo = new ProcessStartInfo
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                FileName = installerPath,
-                UseShellExecute = true
-            };
+                _writer.WriteLine($"The SDK has been downloaded to: {installerPath}");
+            }
 
-            Process.Start(processStartInfo)?.WaitForExit();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Run("installer", $"-pkg {installerPath}");
+                return;
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Run(installerPath, $"/install /quiet /norestart");
+            }
+            
+            throw new PlatformNotSupportedException();
         }
     }
 }
