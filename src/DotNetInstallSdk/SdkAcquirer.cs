@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,13 +18,15 @@ namespace DotNet.InstallSdk
         readonly ITextWriter _textWriter;
         readonly IInstallerLauncher _installerLauncher;
         readonly IPlatformIdentifier _platformIdentifier;
+        readonly IDotnetInfo _dotnetInfo;
 
-        public SdkAcquirer(HttpClient httpClient, ITextWriter textWriter, IInstallerLauncher installerLauncher, IPlatformIdentifier platformIdentifier)
+        public SdkAcquirer(HttpClient httpClient, ITextWriter textWriter, IInstallerLauncher installerLauncher, IPlatformIdentifier platformIdentifier, IDotnetInfo dotnetInfo)
         {
             _httpClient = httpClient;
             _textWriter = textWriter;
             _installerLauncher = installerLauncher;
             _platformIdentifier = platformIdentifier;
+            _dotnetInfo = dotnetInfo;
         }
 
         public async Task Acquire(Acquirable acquirable)
@@ -32,6 +35,12 @@ namespace DotNet.InstallSdk
             if (!result.IsSuccess)
                 return;
             
+            if (await CheckSdkExists(result.Version))
+            {
+                _textWriter.WriteLine($"SDK version {result.Version} is already installed.");
+                return;
+            }
+
             using var channelResponse = await JsonDocument.ParseAsync(await _httpClient.GetStreamAsync(result.ChannelJson));
 
             var file = channelResponse
@@ -53,7 +62,7 @@ namespace DotNet.InstallSdk
                 .First(x => x.GetProperty("version").GetString() == result.Version)
                 .GetProperty("files")
                 .EnumerateArray()
-                .First(x => x.GetProperty("rid").GetString() == _platformIdentifier.GetPlatform());
+                .First(FileFilter);
 
             var name = file.GetProperty("name").GetString();
             var installerUrl = file.GetProperty("url").GetString();
@@ -112,6 +121,46 @@ namespace DotNet.InstallSdk
             var hashString = BitConverter.ToString(hash).Replace("-", "");
             if (hashString != fileHash)
                 _textWriter.WriteLine("The downloaded file contents did not match expected hash.");
+        }
+        
+        async Task<bool> CheckSdkExists(string version)
+        {
+            try
+            {
+                var dotnetInfo =
+                    (await _dotnetInfo.GetInfo()).Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+
+                var existingSdks =
+                    dotnetInfo
+                        .SkipWhile(x => !x.Contains(".NET Core SDKs installed:"))
+                        .TakeWhile(x => !string.IsNullOrWhiteSpace(x))
+                        .Select(x => x.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                        .Where(x => x.Length > 0)
+                        .Select(x => x.First());
+
+                return existingSdks.Contains(version);
+            }
+            catch
+            {
+                return false; // If we fail to detect installed sdks, just assume we need to acquire it
+            }
+        }
+
+        bool FileFilter(JsonElement file)
+        {
+            string GetFilenameSuffix()
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    return $".gz";
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    return $".pkg";
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    return $".exe";
+                throw new PlatformNotSupportedException();
+            }
+
+            return file.GetProperty("rid").GetString() == _platformIdentifier.GetPlatform() &&
+                   file.GetProperty("name").ToString().EndsWith(GetFilenameSuffix());
         }
     }
 }

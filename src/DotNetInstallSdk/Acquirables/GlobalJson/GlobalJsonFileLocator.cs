@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace DotNet.InstallSdk.Acquirables.GlobalJson
@@ -11,13 +12,24 @@ namespace DotNet.InstallSdk.Acquirables.GlobalJson
         
         public GlobalJsonParseResult Parse(string file = "global.json")
         {
-            if (!File.Exists(file))
-                return GlobalJsonParseResult.Failure($"A {file} file could not be found in the current directory.");
+            var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+
+            while (dir != null)
+            {
+                var searchFiles = dir.GetFiles(file);
+                if (!searchFiles.Any())
+                {
+                    dir = dir.Parent;
+                    continue;
+                }
+                
+                var contents = File.ReadAllText(Path.Combine(dir.ToString(), file));
+                var result = JsonSerializer.Deserialize<GlobalJsonFile>(contents);
+                
+                return GlobalJsonParseResult.Success(result);
+            }
             
-            var contents = File.ReadAllText(file);
-            var result = JsonSerializer.Deserialize<GlobalJsonFile>(contents);
-            
-            return GlobalJsonParseResult.Success(result);
+            return GlobalJsonParseResult.Failure($"A {file} file could not be found.");
         }
     }
 }

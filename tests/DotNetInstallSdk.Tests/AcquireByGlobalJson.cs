@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using DotNet.InstallSdk.Acquirables.GlobalJson;
 using JustEat.HttpClientInterception;
 using Shouldly;
@@ -17,11 +18,11 @@ namespace DotNet.InstallSdk.Tests
             Console.SetOut(sw);
 
             var tool = new GlobalJsonFileLocator(new ConsoleTextWriter());
-            var result = tool.Parse("_global.json");
+            var result = tool.Parse("not-found.json");
 
             result.IsSuccess.ShouldBe(false);
             result.GlobalJsonFile.ShouldBe(null);
-            result.ErrorMessage.ShouldBe("A _global.json file could not be found in the current directory.");
+            result.ErrorMessage.ShouldBe("A not-found.json file could not be found.");
         }
 
         [Fact]
@@ -42,6 +43,7 @@ namespace DotNet.InstallSdk.Tests
             var textWriter = new ConsoleTextWriter();
             var installerLauncher = new TestInstallerLauncher();
             var platformIdentifier = new TestPlatformIdentifier();
+            var dotnetInfo = new TestDotnetInfo();
             
             var options = new HttpClientInterceptorOptions();
 
@@ -79,12 +81,25 @@ namespace DotNet.InstallSdk.Tests
 
             var a = new GlobalJsonVersion(textWriter);
             
-            new SdkAcquirer(httpClient, textWriter, installerLauncher, platformIdentifier)
+            new SdkAcquirer(httpClient, textWriter, installerLauncher, platformIdentifier, dotnetInfo)
                 .Acquire(a).Wait();
 
             var installerPath = installerLauncher.LastLaunchedInstaller;
             installerPath.ShouldNotBeNullOrEmpty();
             File.ReadAllLines(installerPath).ShouldHaveSingleItem().ShouldBe("install me");
+        }
+    }
+    
+    public class TestDotnetInfo : IDotnetInfo
+    {
+        public Task<string> GetInfo()
+        {
+            return Task.FromResult(@"Some text
+
+.NET Core SDKs installed:
+  2.1.301 [/usr/local/share/dotnet/sdk]
+
+Some other text");
         }
     }
 }

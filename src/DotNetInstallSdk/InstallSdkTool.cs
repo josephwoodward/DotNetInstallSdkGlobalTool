@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,12 +7,12 @@ namespace DotNet.InstallSdk
 {
     public static class InstallSdkTool
     {
-        public static void Run(Acquirable acquirable, ConsoleTextWriter writer)
+        public static async Task RunAsync(Acquirable acquirable, ITextWriter writer)
         {
             try
             {
-                var sdkAcquirer = new SdkAcquirer(new HttpClient(), writer, new InstallerLauncher(), new PlatformIdentifier());
-                sdkAcquirer.Acquire(acquirable).GetAwaiter().GetResult();
+                var sdkAcquirer = new SdkAcquirer(new HttpClient(), writer, new InstallerLauncher(writer), new PlatformIdentifier(), new DotnetInfo());
+                await sdkAcquirer.Acquire(acquirable);
             }
             catch (FileNotFoundException e)
             {
