@@ -10,8 +10,11 @@ namespace DotNet.InstallSdk
         public static int Main(string[] args)
             => CommandLineApplication.Execute<Program>(args);
 
-        [Option("-LP|--latest-preview", Description = "Install the latest preview version of the .NET Core SDK")]
+        [Option("-LP|--latest-preview", Description = "Optional. Install the latest preview version of the .NET Core SDK")]
         public bool LatestPreview { get; } = false;
+        
+        [Option("-H|--headless <Boolean>", Description = "Optional. Install .NET Core SDK in headless mode (default is true")]
+        public string Headless { set; get; }
 
 /*
         [Option("-L|--latest", Description = "Install the latest non-preview version of the .NET Core SDK")]
@@ -19,19 +22,19 @@ namespace DotNet.InstallSdk
 */
         private async Task OnExecuteAsync()
         {
+            var args = new ToolArguments
+            {
+                Headless = bool.Parse(Headless),
+                LatestPreview = LatestPreview
+            };
+            
             var writer = new ConsoleTextWriter();
 
-            Acquirable a;
-            if (LatestPreview)
-            {
-                a = new LatestPreviewVersion(writer);
-            }
-            else
-            {
-                a = new GlobalJsonVersion(writer);
-            }
+            var acquirable = args.LatestPreview
+                ? (Acquirable) new LatestPreviewVersion(writer)
+                : new GlobalJsonVersion(writer); 
 
-            await InstallSdkTool.RunAsync(a, writer);
+            await InstallSdkTool.RunAsync(acquirable, writer, args);
         }
     }
 }
