@@ -13,8 +13,9 @@ namespace DotNet.InstallSdk
         [Option("-LP|--latest-preview", Description = "Optional. Install the latest preview version of the .NET Core SDK")]
         public bool LatestPreview { get; } = false;
 
-        [Option("-H|--headless <Boolean>", Description = "Optional. Install .NET Core SDK in headless mode (default is true")]
-        public string Headless { set; get; }
+        [Option("-H|--headless <Boolean>", Description =
+            "Optional. Install .NET Core SDK in headless mode (default is true")]
+        public string Headless { set; get; } = "true";
 
 /*
         [Option("-L|--latest", Description = "Install the latest non-preview version of the .NET Core SDK")]
@@ -29,6 +30,9 @@ namespace DotNet.InstallSdk
             };
 
             var writer = new ConsoleTextWriter();
+            
+            if (args.Headless)
+                writer.WriteLine("Running in headless mode");
 
             var acquirable = args.LatestPreview
                 ? (Acquirable) new LatestPreviewVersion(writer)
