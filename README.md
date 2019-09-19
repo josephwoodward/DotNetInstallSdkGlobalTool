@@ -15,7 +15,7 @@ You can also find InstallSdkGlobalTool [on NuGet here](https://www.nuget.org/pac
 
 You can use this tool to download and install .NET Core SDK versions based on a variety of ways, these are:
 
-### Install based on global.json
+### Install .NET Core SDK based on global.json
 
 1. Navigate to any directory within your .NET Core application that has a `global.json` file. 
 2. Run `$ dotnet install-sdk`
