@@ -31,3 +31,16 @@ The .NET core Install SDK global tool will then download and lauch the installer
 ##Contributions
 
 Big thanks to [@stuartblang](https://twitter.com/stuartblang) who contributed loads to this.
+
+### Options
+
+```bash
+$ dotnet install-sdk -h
+
+Usage: DotNetInstallSdk [options]
+
+Options:
+  -LP|--latest-preview     Optional. Install the latest preview version of the .NET Core SDK
+  -H|--headless <Boolean>  Optional. Install .NET Core SDK in headless mode (default is true
+  -?|-h|--help             Show help information
+```
