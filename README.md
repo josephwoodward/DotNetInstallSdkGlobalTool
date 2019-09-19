@@ -11,16 +11,16 @@ $ dotnet tool install -g installsdkglobaltool
 
 You can also find InstallSdkGlobalTool [on NuGet here](https://www.nuget.org/packages/InstallSdkGlobalTool/).
 
-## Usage:
+## Features:
 
 You can use this tool to download and install .NET Core SDK versions based on a variety of ways, these are:
 
 ### Install based on global.json
 
-1. Navigate to a directory that contains a `global.json` file in your terminal.
+1. Navigate to any directory within your .NET Core application that has a `global.json` file. 
 2. Run `$ dotnet install-sdk`
 
-The .NET Core Install SDK global tool will then download and launch the installer for the version of the SDK dictated by the global.json file.
+The .NET Core Install SDK global tool will then scan the project directories for a global.json file. If found it will download and install the SDK dictated by the global.json file.
 
 ### Install latest .NET Core SDK Preview
 
@@ -41,6 +41,6 @@ Usage: DotNetInstallSdk [options]
 
 Options:
   -LP|--latest-preview     Optional. Install the latest preview version of the .NET Core SDK
-  -H|--headless <Boolean>  Optional. Install .NET Core SDK in headless mode (default is true
+  -H|--headless <Boolean>  Optional. Install .NET Core SDK in headless mode (default is true)
   -?|-h|--help             Show help information
 ```
