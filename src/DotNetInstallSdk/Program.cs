@@ -14,7 +14,7 @@ namespace DotNet.InstallSdk
         public bool LatestPreview { get; } = false;
 
         [Option("-H|--headless <Boolean>", Description =
-            "Optional. Install .NET Core SDK in headless mode (default is true")]
+            "Optional. Install .NET Core SDK in headless mode (default: true)")]
         public string Headless { set; get; } = "true";
 
 /*
