@@ -28,10 +28,6 @@ The .NET Core Install SDK global tool will then scan the project directories for
 
 The .NET core Install SDK global tool will then download and lauch the installer for the latest preview of the .NET Core SDK.
 
-##Contributions
-
-Big thanks to [@stuartblang](https://twitter.com/stuartblang) who contributed loads to this.
-
 ### Options
 
 ```bash
@@ -44,3 +40,8 @@ Options:
   -H|--headless <Boolean>  Optional. Install .NET Core SDK in headless mode (default is true)
   -?|-h|--help             Show help information
 ```
+
+
+## Contributions
+
+Big thanks to [@stuartblang](https://twitter.com/stuartblang) who contributed loads to this.
