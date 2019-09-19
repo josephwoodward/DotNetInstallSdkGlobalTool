@@ -28,7 +28,7 @@ The .NET Core Install SDK global tool will then scan the project directories for
 
 The .NET core Install SDK global tool will then download and lauch the installer for the latest preview of the .NET Core SDK.
 
-### Options
+## Options
 
 ```bash
 $ dotnet install-sdk -h
