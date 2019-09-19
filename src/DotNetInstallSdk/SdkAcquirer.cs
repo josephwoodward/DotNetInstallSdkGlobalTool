@@ -151,11 +151,11 @@ namespace DotNet.InstallSdk
             string GetFilenameSuffix()
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                    return $".gz";
+                    return ".gz";
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    return $".pkg";
+                    return ".pkg";
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    return $".exe";
+                    return ".exe";
                 throw new PlatformNotSupportedException();
             }
 
