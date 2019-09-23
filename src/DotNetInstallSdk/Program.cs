@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using DotNet.InstallSdk.Acquirables;
 using DotNet.InstallSdk.Acquirables.GlobalJson;
+using DotNet.InstallSdk.Acquirables.LatestNonPreview;
+using DotNet.InstallSdk.Acquirables.LatestPreview;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace DotNet.InstallSdk
@@ -13,20 +15,20 @@ namespace DotNet.InstallSdk
         [Option("-LP|--latest-preview", Description = "Optional. Install the latest preview version of the .NET Core SDK")]
         public bool LatestPreview { get; } = false;
 
+        [Option("-L|--latest", Description = "Install the latest non-preview version of the .NET Core SDK")]
+        public bool Latest { get; } = false;
+        
         [Option("-H|--headless <Boolean>", Description =
             "Optional. Install .NET Core SDK in headless mode (default: true)")]
         public string Headless { set; get; } = "true";
-
-/*
-        [Option("-L|--latest", Description = "Install the latest non-preview version of the .NET Core SDK")]
-        public bool Latest { get; } = false;
-*/
+        
         private async Task OnExecuteAsync()
         {
             var args = new ToolArguments
             {
                 LatestPreview = LatestPreview,
-                Headless = bool.TryParse(Headless, out var headless) && headless
+                Headless = bool.TryParse(Headless, out var headless) && headless,
+                Latest = Latest
             };
 
             var writer = new ConsoleTextWriter();
@@ -34,9 +36,11 @@ namespace DotNet.InstallSdk
             if (args.Headless)
                 writer.WriteLine("Running in headless mode");
 
-            var acquirable = args.LatestPreview
-                ? (Acquirable) new LatestPreviewVersion(writer)
-                : new GlobalJsonVersion(writer); 
+            Acquirable acquirable = new GlobalJsonVersion(writer);
+            if (args.LatestPreview)
+                acquirable = new LatestPreviewVersion(writer);
+            if (args.Latest)
+                acquirable = new LatestNonPreviewVersion(writer);
 
             await InstallSdkTool.RunAsync(acquirable, writer, args);
         }

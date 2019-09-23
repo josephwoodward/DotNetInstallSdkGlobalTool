@@ -3,11 +3,11 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace DotNet.InstallSdk.Acquirables
+namespace DotNet.InstallSdk.Acquirables.LatestNonPreview
 {
-    public class LatestPreviewVersion : Acquirable
+    public class LatestNonPreviewVersion : Acquirable
     {
-        public LatestPreviewVersion(ITextWriter writer)
+        public LatestNonPreviewVersion(ITextWriter writer)
         {
         }
 
@@ -16,7 +16,7 @@ namespace DotNet.InstallSdk.Acquirables
             using var releasesResponse = await JsonDocument.ParseAsync(await httpClient.GetStreamAsync(ReleaseIndex));
 
             var channel = releasesResponse.RootElement.GetProperty("releases-index").EnumerateArray()
-                .First(x => x.GetProperty("support-phase").GetString() == "preview");
+                .First(x => x.GetProperty("support-phase").GetString() == "current");
 
             return new AcquireResult
             {
