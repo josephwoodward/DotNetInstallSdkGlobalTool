@@ -24,14 +24,14 @@ The .NET Core Install SDK global tool will then scan the project directories for
 
 ### Install latest .NET Core SDK Preview
 
-1. Run `$ dotnet install-sdk --latest-preview` from any directory
+1. Run `$ dotnet-install-sdk --latest-preview` from any directory
 
 The .NET core Install SDK global tool will then download and lauch the installer for the latest preview of the .NET Core SDK.
 
 ## Options
 
 ```bash
-$ dotnet install-sdk -h
+$ dotnet-install-sdk -h
 
 Usage: DotNetInstallSdk [options]
 
