@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -16,7 +18,12 @@ namespace DotNet.InstallSdk.Acquirables.LatestNonPreview
             using var releasesResponse = await JsonDocument.ParseAsync(await httpClient.GetStreamAsync(ReleaseIndex));
 
             var channel = releasesResponse.RootElement.GetProperty("releases-index").EnumerateArray()
-                .First(x => x.GetProperty("support-phase").GetString() == "current");
+                .FirstOrDefault(x => x.GetProperty("support-phase").GetString() == "lts" || x.GetProperty("support-phase").GetString() == "current");
+
+            if (channel.ValueKind == JsonValueKind.Undefined)
+            {
+                throw new FileNotFoundException("No non-preview version could be found");
+            }
 
             return new AcquireResult
             {

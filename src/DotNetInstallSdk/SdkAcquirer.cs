@@ -132,7 +132,7 @@ namespace DotNet.InstallSdk
 
                 var existingSdks =
                     dotnetInfo
-                        .SkipWhile(x => !x.Contains(".NET Core SDKs installed:"))
+                        .SkipWhile(x => !x.Contains("SDKs installed:"))
                         .TakeWhile(x => !string.IsNullOrWhiteSpace(x))
                         .Select(x => x.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                         .Where(x => x.Length > 0)
